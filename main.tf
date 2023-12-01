@@ -102,7 +102,7 @@ resource "aws_instance" "server_1" {
   instance_type = var.ec2_instance_type
   subnet_id     = aws_subnet.subnet_1.id
   associate_public_ip_address = true
-  key_name      = aws_key_pair.devops.key_name //replace with your ssh key name
+  key_name      = aws_key_pair.devops.key_name
   security_groups = [ aws_security_group.allow_tcp.id, aws_security_group.shared.id ]
   tags = {
     Name = "Server1"
