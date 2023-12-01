@@ -15,13 +15,9 @@ to Server2 via ssh, use the following command: `ssh <target_instance_private_ip>
 Once the test is completed, use `terraform destroy` to clean up the resources created.
 
 ### Ways to improve the code
-- Provided is a quick and dirty approach, ideally the instance creation should be done via loops, i.e. when we need 
-more than one instance we don't have to create a separate entry for each new instance. Instead, put a 
-desired number of instances to create
-
 - Use Data Source to utilize existing VPCs, subnets and internet gateways
 - The certified AMI images should be used, I used the community image because my temp AWS account role
 doesn't allow me to create a free subscription for AWS provided CentOS image 
 
 ### My feedback
-- I think the test is fair enough considering the complexity
+- I think the test is ok considering the time/complexity involved.
