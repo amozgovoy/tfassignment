@@ -102,15 +102,39 @@ resource "aws_key_pair" "devops" {
   public_key = var.public_key
 }
 
-resource "aws_instance" "server" {
-  count                       = length(var.availability_zones)
+resource "aws_instance" "server1" {
   ami                         = var.aws_ami
   instance_type               = var.ec2_instance_type
-  subnet_id                   = element(aws_subnet.subnet.*.id, count.index) //aws_subnet.subnet_1.id
+  subnet_id                   = element(aws_subnet.subnet.*.id, 0)
   associate_public_ip_address = true
   key_name                    = aws_key_pair.devops.key_name
   security_groups             = [aws_security_group.allow_tcp.id, aws_security_group.shared.id]
+  user_data                   = <<-EOF
+  #!/bin/bash -x
+  sudo yum update -y
+  sudo yum install docker -y
+  sudo sysctl -w vm.max_map_count=262144
+  docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.15
+  EOF
   tags = {
-    Name = "Server${count.index + 1}"
+    Name = "Server1"
   }
+}
+
+locals {
+  es_private_ip = aws_instance.server1.private_ip
+}
+
+resource "aws_instance" "server2" {
+  ami                         = var.aws_ami
+  instance_type               = var.ec2_instance_type
+  subnet_id                   = element(aws_subnet.subnet.*.id, 1)
+  associate_public_ip_address = true
+  key_name                    = aws_key_pair.devops.key_name
+  security_groups             = [aws_security_group.allow_tcp.id, aws_security_group.shared.id]
+  user_data                   = base64encode(templatefile("kibana.tftpl", { es_private_ip = local.es_private_ip }))
+  tags = {
+    Name = "Server2"
+  }
+  depends_on = [aws_instance.server1]
 }

@@ -1,0 +1,5 @@
+#!/bin/bash -x
+sudo yum update -y
+sudo yum install docker -y
+sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
+docker run -d -p 80:5601 -e "ELASTICSEARCH_HOSTS=http://${es_private_ip}:9200" docker.elastic.co/kibana/kibana:7.17.15
