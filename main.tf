@@ -68,11 +68,26 @@ resource "aws_security_group" "allow_tcp" {
   }
 
   ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["${chomp(data.http.myip.response_body)}/32"]
+  }
+
+  ingress {
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
     security_groups = [aws_security_group.shared.id]
   }
+
+  ingress {
+    from_port       = 9200
+    to_port         = 9200
+    protocol        = "tcp"
+    security_groups = [aws_security_group.shared.id]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
