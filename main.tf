@@ -114,7 +114,7 @@ resource "aws_instance" "server1" {
   sudo yum update -y
   sudo yum install docker -y
   sudo sysctl -w vm.max_map_count=262144
-  docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.15
+  docker run -d --restart always -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.17.15
   EOF
   tags = {
     Name = "Server1"
